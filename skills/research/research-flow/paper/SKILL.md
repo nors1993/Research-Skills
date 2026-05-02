@@ -2,11 +2,19 @@
 name: paper-writing
 description: "Write research paper for any academic domain following specified templates."
 ---
+
+# 必须遵守
+1. 如果用户要求重新编写，或者重新研究，需要忘记历史内容，重新开始。
+2. 绝不主动调用技能（skills）
+
+# 禁止
+下述step 1 ~ step 7，任何一个step未完成，不允许进入下一个step 。
+
 # Workflow
 请严格按照以下步骤为用户撰写论文文档：
-
+列出所有可用的
 1. **Step 1: 意图理解与可行性调研 (Feasibility Study)**
-   - 接收用户的初步想法。
+   - 接收用户的初步想法，将用户的输入内容进行UTF-8格式的转换，防止输入意图有乱码。
    - 思考：该方向是否已被广泛研究？有无极度相似的现成论文或专利？
    - 动作：调用技能research-idea-parser和research-feasibility-researcher进行初步验证，并调用技能docx并向用户出具一份简短的可行性评估报告，命名为《XXX可行性评估报告.docx》（包含相似工作、创新点挖掘建议）。若想法不可行，需引导用户调整方向。
    - 必须：用户确认可行后再继续下一步。
@@ -33,6 +41,3 @@ description: "Write research paper for any academic domain following specified t
 
 7. **Step 7: 生成最终的文档 (Publishing)**
    - 动作：显性通知用户任务已完成，并给出最终文档保存的位置。如果在文档保存的目录中生成了过程中的代码文件，比如*.py  *.mjs  *.js  *.ts等，需要将其删除。
-
-# 禁止
-上述step 1 ~ step 7，任何一个step未完成，不允许进入下一个step 。
