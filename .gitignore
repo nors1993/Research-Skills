@@ -1,0 +1,10 @@
+# Ignore everything in root
+/*
+# Except research-flow
+!skills/
+skills/*
+!skills/research/
+skills/research/*
+!skills/research/research-flow/
+skills/research/research-flow/*
+!skills/research/research-flow/**
