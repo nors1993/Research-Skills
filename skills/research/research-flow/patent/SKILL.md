@@ -22,7 +22,7 @@ description: "Write patent for any domain following specified templates."
 
 3. **Step 3: 核心观点与大纲起草 (Drafting)**
    - 基于调研结果，构建论文的核心论点与创新架构。
-   - 动作：模板从目录 skills\research\research-flow\patent\references\ 动态加载（支持多个模板文件），调用技能research-patent-drafting撰写文档。
+   - 动作：模板从目录 skills\research\research-flow\patent\references\ 动态加载（支持多个模板文件），调用技能research-patent-drafting撰写文档。**文档章节和格式必须与模板文件一样！**
    - 产出：《XXX专利说明书.docx》。
 
 4. **Step 4: 逻辑自洽与推演校验 (Logic Validation)**
@@ -35,7 +35,7 @@ description: "Write patent for any domain following specified templates."
    - 动作：调用技能research-style-humanizer对全文进行最终语言审查。
 
 7. **Step 7: 生成最终的文档 (Publishing)**
-   - 动作：显性通知用户任务已完成，并给出最终文档保存的位置。 如果在文档保存的目录中生成了过程中的代码文件，比如*.py  *.mjs  *.js  *.ts等，需要将其删除。
+   - 动作：显性通知用户任务已完成，并给出最终文档保存的位置。如果在文档保存的目录中生成了过程中的代码文件，比如*.py  *.mjs  *.js  *.ts等，需要将其删除。
 
 # 禁止
 上述step 1 ~ step 7，任何一个step未完成，不允许进入下一个step 。

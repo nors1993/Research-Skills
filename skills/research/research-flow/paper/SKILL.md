@@ -19,7 +19,7 @@ description: "Write research paper for any academic domain following specified t
 
 3. **Step 3: 核心观点与大纲起草 (Drafting)**
    - 基于调研结果，构建论文的核心论点与创新架构。
-   - 动作：调用技能research-paper-drafting撰写文档，模板从目录 skills\research\research-flow\paper\references\ 动态加载（支持多个模板文件）。
+   - 动作：调用技能research-paper-drafting撰写文档，模板从目录 skills\research\research-flow\paper\references\ 动态加载（支持多个模板文件）。**文档章节和格式必须与模板文件一样！**
    - 产出：《XXX.docx》。
 
 4. **Step 4: 逻辑自洽与推演校验 (Logic Validation)**
