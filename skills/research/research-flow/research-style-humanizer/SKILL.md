@@ -280,6 +280,25 @@ Deep learning enables...
 Contemporary research shows...
 ```
 
+### 6. Chinese Academic AI Patterns (中文论文特有)
+
+These are the most frequent AI-tell markers in Chinese academic prose. **Rule: delete the phrase and start the sentence directly — the content is almost always stronger without the wrapper.**
+
+| Pattern | Frequency | Fix |
+|---------|-----------|-----|
+| `需要指出的是，` | Very high | Drop it; start directly |
+| `值得关注的是，` | Very high | Drop it; start directly |
+| `值得注意的是，` | Very high | Drop it; start directly |
+| `应当指出的是，` | High | Drop it or use a specific subject |
+| `众所周知，` | Medium | Replace with a specific citation or drop |
+| `不难发现，` | Medium | Drop; state the finding directly |
+| `总而言之，` | Medium | Drop or use a one-sentence summary signal |
+
+**Before:** `值得注意的是，Starlink单一星座的在轨卫星数已超过6,000颗...`  
+**After:** `Starlink单一星座的在轨卫星数已超过6,000颗...`
+
+The pattern is always the same: these phrases add zero information and sound like an AI stalling for time. Search for them with `search_files pattern='需要指出的|值得关注的|值得注意的是|应当指出|众所周知|不难发现|总而言之'` after drafting.
+
 ---
 
 ## Multi-Pass Humanization

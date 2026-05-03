@@ -5,7 +5,7 @@ description: "Write research paper for any academic domain following specified t
 
 # 必须遵守
 1. 如果用户要求重新编写，或者重新研究，需要忘记历史内容，重新开始。
-2. 绝不主动调用技能（skills）
+2. 任务开始前，先让用户提供文件保存的目录位置，后续所有文件都保存在用户提供的目录中。
 
 # 禁止
 下述step 1 ~ step 7，任何一个step未完成，不允许进入下一个step 。

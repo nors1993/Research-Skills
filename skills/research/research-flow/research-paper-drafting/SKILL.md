@@ -11,7 +11,7 @@ metadata:
   hermes:
     tags: [Research, Paper Writing, Academic Writing, Domain-Agnostic, Geography, Remote Sensing, GIS, Geology, Petroleum, Hydrogeology]
     category: research
-    related_skills: [research-deep-researcher, research-consistency-checker, research-plagiarism-detector]
+    related_skills: [research-deep-researcher, research-consistency-checker, research-plagiarism-detector, research-style-humanizer]
     requires_toolsets: [llm, files]
 ---
 
@@ -612,13 +612,11 @@ When user requests Word document output:
 
 1. **This skill** generates paper content (JSON/Text)
 2. **Load docx skill** to create formatted .docx
-3. **docx skill** handles all formatting:
-   - Page setup (A4/Letter, margins)
-   - Heading styles (Heading 1, 2, 3)
-   - Tables with proper formatting
-   - Numbered/bulleted lists
-   - Page numbers, headers/footers
-   - Table of contents (optional)
+3. **docx skill** handles all formatting
+
+**⚠️ Chinese papers:** Use **python-docx** (not docx-js). docx-js chokes on Chinese smart quotes in JS strings. See docx skill's `references/chinese-md-to-docx-recipe.md` for the **two-phase table detection** technique — scan for all `|---|` separators first, then process content; do NOT try inline table detection during the main parse loop. It will drop data rows silently.
+
+**⚠️ Environment:** `execute_code` sandbox often lacks `python-docx`. Always run .docx generation scripts via `terminal: python3 script.py`.
 
 ### Example Workflow
 
