@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+.pip-cache/
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Skill bundle artifacts (generated)
+.bundled_manifest
+.usage.json
+.curator_state
+
+# Temporary files
+*.tmp
+*.temp
+*.log
