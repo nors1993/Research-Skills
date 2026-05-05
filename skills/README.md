@@ -294,7 +294,7 @@ skills/
 |------|------|
 | Round 1 | 广度搜索，找到相关论文 / Broad search to find related papers |
 | Round 2 | 深度搜索，基于第一轮术语扩展 / Deep search, expanding on Round 1 terms |
-| Round 3 | ���对性搜索，填补空白 / Targeted search to fill gaps |
+| Round 3 | 针对性搜索，填补空白 / Targeted search to fill gaps |
 
 **搜索源选择 / Search Source Selection**:
 | 学科领域 / Domain | 推荐搜索源 / Recommended Sources |
