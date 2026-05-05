@@ -10,6 +10,31 @@ This directory contains a suite of professional academic research assistant Skil
 
 ---
 
+## 目录结构 / Directory Structure
+
+```
+skills/
+├── arxiv/                    # 学术论文预印本搜索
+├── blogwatcher/               # 博客内容监控
+├── docx/                   # Word 文档处理
+├── paper-writing/           # 论文撰写 (主流程)
+│   ├── references/        # 参考文档
+│   └── asserts/          # 断言模板
+├── patent-writing/        # 专利撰写
+└── research-*/           # 细分研究技能
+    ├── research-intent/              # 意图判断
+    ├── research-idea-parser/       # 想法解析
+    ├── research-feasibility-researcher/   # 可行性调研
+    ├── research-deep-researcher/       # 深度文献调研
+    ├── research-paper-drafting/     # 论文起草
+    ├── research-patent-drafting/    # 专利起草
+    ├── research-consistency-checker/  # 逻辑检查
+    ├── research-plagiarism-detector/ # 查重检测
+    └── research-style-humanizer/     # 语言润色
+```
+
+---
+
 ## 业务流程总览 / Business Process Overview
 
 ### 论文写作流程 / Paper Writing Process
