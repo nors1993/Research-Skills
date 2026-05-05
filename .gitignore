@@ -1,10 +1,10 @@
-# Ignore everything in root
-/*
-# Except research-flow
-!skills/
-skills/*
-!skills/research/
-skills/research/*
-!skills/research/research-flow/
-skills/research/research-flow/*
-!skills/research/research-flow/**
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+id_ed25519
+*.secret
+credentials.json
+secrets.yaml
+config.*.json
