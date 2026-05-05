@@ -394,10 +394,26 @@ sections: [{
 - **TOC requires HeadingLevel only** - no custom styles on heading paragraphs
 - **Override built-in styles** - use exact IDs: "Heading1", "Heading2", etc.
 - **Include `outlineLevel`** - required for TOC (0 for H1, 1 for H2, etc.)
+
+### Pitfall: Generating docx JS from Python f-strings (brace escaping)
+
+When using Python to generate JavaScript that calls docx-js, you will encounter two layers of brace interference:
+
+**Problem 1 — f-string `{{}}` vs `{}`**: Inside a Python f-string, `{{` produces a literal `{` in the output. This means JS object literals inside an f-string must use `{{key: value}}` to produce `{key: value}`. Mixing regular `{var}` interpolation with literal `{{braces}}` is fragile and error-prone.
+
+**Problem 2 — `{` interpreted as Python expression**: A stray `{` in a multi-line f-string with triple quotes will be parsed as a Python interpolation marker. `{spacing: ...` becomes `SyntaxError: f-string: unmatched '('` because `spacing` is not a valid Python expression followed by `:`.
+
+**Problem 3 — Chinese/curly quote characters**: `\u201c` (") and `\u201d` (") embedded in double-quoted JS strings terminate the string. Must use `\\u201c` / `\\u201d` or switch to template literals.
+
+**Best practice**: When building complex docx-js code from Python, avoid f-strings for the JavaScript content entirely. Use one of:
+- **Pure string concatenation**: Build the JS as a plain string, joining lines with `\n`. Use a dedicated escape function (`def js_str(s): return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')`) for all text inserted into `new TextRun({ text: "..." })` calls.
+- **JSON as intermediate**: Write paper content as JSON from Python, then read it from a standalone JS script — no brace escaping needed.
+- **Dedicated generator script**: Write a `.py` file with `write_file`, run it with `terminal('python3 gen.py')`, then run the generated `.js` file.
 - **Chinese text with CJK quotes** — Chinese curly quotes `\u201c\u201d` (and their single variants) are valid Unicode and render correctly in docx. But when generating via JS, they must be handled carefully based on string context:
   - **Template literals (backticks)**: Chinese quotes pass through natively — only escape backticks and `${`.
   - **Double-quoted JS strings** (e.g. `new TextRun({ text: "..." })`): the `\u201c` (`"`) looks like a regular `"` to the JS parser and will terminate the string. Either use template literals, or write two escape functions: `js_str_for_backtick()` for body text and `js_str_for_quotes()` (which does `replace('"', '\\"')`) for strings embedded in double-quoted context like references.
   - **Pattern for large bilingual papers**: generate content as a JSON intermediate in Python, then build the JS generator from that JSON. This avoids manual escaping errors in long strings.
+- **Python f-string → JS generator pitfall**: When generating a JS file from Python with an f-string (`f'...'`), the JS object literals `{ key: value }` will be interpreted by Python as f-string interpolation expressions. The JS will silently fail because `key` is not a Python variable. **Fix**: build the JS body as a plain string (list of lines + `'\\n'.join()`) instead of an f-string, so JS braces pass through untouched. Never use f-strings with triple-quotes for JS generation that contains JS object literals.
 
 ---
 

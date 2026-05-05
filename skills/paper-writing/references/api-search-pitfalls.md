@@ -36,25 +36,43 @@
 - **不要作为首选检索渠道**
 - 备选：通过 Semantic Scholar、CrossRef、直接 DOI 验证
 
-## CrossRef API
+## CrossRef API — PRIMARY Retrieval Engine ⭐
 
-### 用途 1：作为 PRIMARY 检索工具（当 Semantic Scholar 大面积失败时）
+**当 Semantic Scholar 持续返回 0 或 HTTP 429 时，CrossRef 应是你的 FIRST CHOICE，而非备选。** CrossRef 没有实际限速（礼貌性 0.5s 间隔即可），对复杂多词英文查询容忍度高，返回结构化 JSON 含完整元数据（title, authors, year, journal, DOI, abstract, subjects, is-referenced-by-count）。
 
-当 Semantic Scholar 持续返回 0 结果时，CrossRef 的 `query.title` 端点可作为主检索手段：
+### 大规模检索模式（适用于文献计量 / systematic review 类论文）
 
 ```python
-params = urllib.parse.urlencode({'query.title': 'paper title here', 'rows': '2'})
-url = f"https://api.crossref.org/works?{params}"
+import urllib.request, urllib.parse, json, time
+
+def search_crossref(query, rows=100, offset=0):
+    params = {
+        'query': query,
+        'rows': str(rows),
+        'offset': str(offset),
+        'filter': 'type:journal-article',   # 仅期刊论文
+        'sort': 'relevance'
+    }
+    url = "https://api.crossref.org/works?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={'User-Agent': 'MyApp/1.0 (mailto:research@example.com)'})
+    with urllib.request.urlopen(req, timeout=25) as resp:
+        data = json.loads(resp.read())
+    return data['message']['items'], data['message']['total-results']
 ```
 
-优点：限速宽松（无需刻意等 1.5s），返回结构化 JSON，对多词英文查询容忍度高。
-缺点：中文论文覆盖率较低，部分会议论文可能未收录。
+**去重**：用 DOI 作为唯一键（`seen_dois` set），因为同一论文可能被多个查询命中。
 
-### 用途 2：验证已知 DOI 的真实性
+**分页**：CrossRef 通常允许 offset 最大到约 1000，通过 `for offset in [0, 100, 200, ...]` 遍历。
+
+**年份过滤**：CrossRef 返回的年份取自 `published-print['date-parts'][0][0]` 或 fallback `created['date-parts'][0][0]`——必须在 Python 侧过滤（`filter` 参数不支持年份范围直接过滤）。
+
+**Abstract 截断**：将 abstract 截断至 400-500 字符以减小 JSON 体积（完整 abstract 在 paper 正文中不需要）。
+
+### 用途：验证已知 DOI
 ```
 curl "https://api.crossref.org/works/10.xxx/xxx"
 ```
-返回 title, authors, journal, year 等元数据——用于交叉验证 Semantic Scholar 检索到的论文是否真实存在。
+返回 title, authors, journal, year 等元数据——用于交叉验证其他来源检索到的论文是否真实存在。
 
 ## 文献验证策略
 

@@ -257,6 +257,12 @@ curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=Yann+LeCun
 | arXiv | ~1 req / 3 seconds | None needed |
 | Semantic Scholar | 1 req / second | None (100/sec with API key) |
 
+## Semantic Scholar Reliability Notes
+
+- **Multi-word query anomaly**: When searching via `urllib.request` in Python execute_code, multi-word queries (e.g. "satellite industry market") can return `total: 0` even when direct `curl` with `%20` encoding succeeds. If execute_code returns empty results, fall back to terminal `curl` with manual `%20` URL encoding.
+- **Aggressive rate limiting**: HTTP 429 can persist for minutes after rapid-fire requests. The stated "1 req/sec" is optimistic; use 3+ second delays between requests and expect periodic 429s. After a burst of ~30-40 requests, the API may block for 10+ minutes.
+- When S2 fails, use Crossref: The Crossref REST API (`https://api.crossref.org/works`) has very generous rate limits, returns JSON, and covers most journal articles with DOIs. It lacks citation counts but provides title, authors, year, journal, DOI, and abstract. See `references/crossref-api.md` for full usage patterns — including a complete bibliometric collection script, metadata extraction fields, and a comparison table vs Semantic Scholar.
+
 ## Notes
 
 - arXiv returns Atom XML — use the helper script or parsing snippet for clean output

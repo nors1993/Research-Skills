@@ -143,20 +143,78 @@ This directory contains a suite of professional academic research assistant Skil
 
 ## 核心 Skills 详解 / Core Skills Details
 
-### 1. research-intent - 意图判断 / Intent Detection
+### 1. arxiv - 学术论文预印本平台搜索 / ArXiv Search
 
-**功能 / Function**: 识别用户的写作意图是论文还是专利。 / Identifies whether user's writing intent is for a paper or patent.
+**功能 / Function**: 搜索和检索 arXiv 学术论文。/ Search and retrieve academic papers from arXiv.
+
+**核心能力 / Core Capabilities**:
+- 使用 arXiv API 搜索论文 (无需 API Key) / Search papers via arXiv API (no API key needed)
+- 解析 Atom XML 获取元数据 / Parse Atom XML for metadata
+- 生成 BibTeX 引用 / Generate BibTeX citations
+- 结合 Semantic Scholar 获取引用数和关联论文 / Combine with Semantic Scholar for citations and related papers
+
+**搜索源优先级 / Search Source Priority**:
+| 优先级 / Priority | 来源 / Source | 适用 /适用 |
+|----------|------------|
+| 1 | arXiv API | STEM 技术类论文 |
+| 2 | Semantic Scholar API | 引用数据、关联论文 |
+| 3 | Crossref API | 期刊文章 (无限速) |
+
+**⚠️ 注意事项 / Notes**:
+- 搜索间隔需 ≥3 秒 / Rate limit: ≥3 seconds between requests
+- 多词查询建议使用 Crossref / Use Crossref for multi-word queries
+- 详见 `arxiv/SKILL.md` 获取完整使用说明
+
+### 2. docx - Word 文档处理 / Word Document Processing
+
+**功能 / Function**: 创建、编辑、转换 Word 文档 (.docx)。/ Create, edit, convert Word documents.
+
+**核心能力 / Core Capabilities**:
+- 使用 docx-js 创建新文档 / Create new documents with docx-js
+- 解包 → 编辑 XML → 打包编辑现有文档 / Edit existing documents (unpack → edit XML → repack)
+- 格式处理 (页眉页脚、目录、表格、图像) / Format handling (headers/footers, TOC, tables, images)
+- 追踪修订与批注 / Track changes and comments
+- 中英双语文档支持 / Bilingual document support (Chinese/English)
+
+**关键规则 / Critical Rules**:
+- 必须显式设置页面尺寸 (docx-js 默认 A4) / Must set page size explicitly (docx-js defaults to A4)
+- 必须使用 DXA 单位设置表格宽度 (百分比在 Google Docs 中失效) / Must use DXA for table width (percentages break in Google Docs)
+- 禁止使用 unicode 符号作为列表标记 / Never use unicode symbols as bullet markers
+
+**⚠️ 注意事项 / Notes**: 详见 `docx/SKILL.md` 获取完整使用说明和坑点指南。
+
+### 3. paper-writing - 论文撰写 / Paper Writing
+
+**功能 / Function**: 根据调研结果撰写完整的学术论文。/ Write complete academic papers based on research findings.
+
+**支持格式 / Supported Formats**: Markdown, LaTeX, Word (.docx)
+
+**特殊工作流 / Special Workflows**:
+- **文献计量类论文**: bibliometric analysis、VOSviewer、Bibliometrix 等 → 需使用调整后的工作流 (详见 `references/bibliometric-paper-workflow.md`)
+- **语言水平调整**: 降级/升级论文的学术水平 (详见 `references/undergraduate-level-adjustment.md`)
+
+**搜索策略优先级 / Search Strategy Priority**:
+1. Crossref API (首选 —— 无限速) / Crossref API (preferred — no rate limit)
+2. Semantic Scholar API (备选，间隔 ≥1.5s) / Semantic Scholar API (backup, ≥1.5s delay)
+3. arXiv API (仅 STEM) / arXiv API (STEM only)
+
+**⚠️ 重要 / Important**:
+- 搜索社交科学/人文时不要依赖 arXiv / Don't rely on arXiv for social sciences/humanities
+- 检索式必须可验证 / Search queries must be verifiable
+- 源数据必须导出为 CSV/Excel / Source data must be exported as CSV/Excel
+
+### 4. research-intent - 意图判断 / Intent Detection
+
+**功能 / Function**: 识别用户的写作意图是论文还是专利。/ Identifies whether user's writing intent is for a paper or patent.
 
 **决策逻辑 / Decision Logic**:
 - 用户需求是 **专利** → 调用 `patent-writing` SKILL / User needs **patent** → call `patent-writing` SKILL
 - 用户需求是 **论文** → 调用 `paper-writing` SKILL / User needs **paper** → call `paper-writing` SKILL
 - 用户未指明 → 自由发挥 / User unspecified → use discretion
 
----
+### 5. research-idea-parser - 研究想法解析 / Research Idea Parser
 
-### 2. research-idea-parser - 研究想法解析 / Research Idea Parser
-
-**功能 / Function**: 将用户的原始研究想法解析为结构化的研究简报。 / Parses user's raw research idea into a structured research brief.
+**功能 / Function**: 将用户的原始研究想法解析为结构化的研究简报。/ Parses user's raw research idea into a structured research brief.
 
 **输出格式 / Output Format**:
 ```json
@@ -165,7 +223,7 @@ This directory contains a suite of professional academic research assistant Skil
   "domain": "Computer Science | Medical Sciences | Geography | ...",
   "sub_domain": "...",
   "key_concepts": ["...", "...", "..."],
-  "potential_methods": ["...", "..."],
+  "potential_methods": ["...", "...", "..."],
   "research_type": "empirical | theoretical | applied",
   "confidence": "high | medium | low",
   "clarification_needed": ["...", "..."],
@@ -173,13 +231,11 @@ This directory contains a suite of professional academic research assistant Skil
 }
 ```
 
-**使用场景 / Use Case**: 用户提供了初步研究想法，需要结构化理解时。 / When user provides initial research idea requiring structured understanding.
+**使用场景 / Use Case**: 用户提供了初步研究想法，需要结构化理解时。/ When user provides initial research idea requiring structured understanding.
 
----
+### 6. research-feasibility-researcher - 可行性调研 / Feasibility Researcher
 
-### 3. research-feasibility-researcher - 可行性调研 / Feasibility Researcher
-
-**功能 / Function**: 评估研究想法是否可行，通过搜索相关工作来评估创新性。 / Evaluates research idea feasibility by searching related work to assess novelty.
+**功能 / Function**: 评估研究想法是否可行，通过搜索相关工作来评估创新性。/ Evaluates research idea feasibility by searching related work to assess novelty.
 
 **核心决策 / Core Decisions**:
 - **proceed**: 想法可行，有足够创新空间 / Idea is feasible with sufficient room for innovation
@@ -198,11 +254,9 @@ This directory contains a suite of professional academic research assistant Skil
 
 **输出文档 / Output Document**: `docx` 生成 **《XXX可行性评估报告.docx》** / Generates **《XXX Feasibility Assessment Report.docx》** via `docx`
 
----
+### 7. research-deep-researcher - 深度文献调研 / Deep Literature Researcher
 
-### 4. research-deep-researcher - 深度文献调研 / Deep Literature Researcher
-
-**功能 / Function**: 进行全面的文献调研，至少收集5篇真实文献。 / Conducts comprehensive literature research, collecting at least 5 real papers.
+**功能 / Function**: 进行全面的文献调研，至少收集15篇真实文献。/ Conducts comprehensive literature research, collecting at least 15 real papers.
 
 **核心原则 / Core Principles**:
 1. **先广后深** - 广泛搜索后深入分析 / Broad first, then deep - extensive search followed by in-depth analysis
@@ -215,7 +269,7 @@ This directory contains a suite of professional academic research assistant Skil
 |------|------|
 | Round 1 | 广度搜索，找到相关论文 / Broad search to find related papers |
 | Round 2 | 深度搜索，基于第一轮术语扩展 / Deep search, expanding on Round 1 terms |
-| Round 3 | 针对性搜索，填补空白 / Targeted search to fill gaps |
+| Round 3 | ���对性搜索，填补空白 / Targeted search to fill gaps |
 
 **搜索源选择 / Search Source Selection**:
 | 学科领域 / Domain | 推荐搜索源 / Recommended Sources |
@@ -232,11 +286,9 @@ This directory contains a suite of professional academic research assistant Skil
 
 **⚠️ 重要 / Important**: 搜索社交科学、人文学科时，**不要依赖 arXiv** - 它主要覆盖CS/物理/数学，社交科学文献在期刊数据库中，需要使用 Crossref API。/ When searching social sciences and humanities, **do not rely on arXiv** - it mainly covers CS/physics/math, social science literature is in journal databases, use Crossref API.
 
----
+### 8. research-paper-drafting - 论文撰写 / Paper Drafting
 
-### 5. research-paper-drafting - 论文撰写 / Paper Drafting
-
-**功能 / Function**: 根据调研结果撰写完整的论文或专利草稿。 / Writes complete paper or patent draft based on research findings.
+**功能 / Function**: 根据调研结果撰写完整的论文或专利草稿。/ Writes complete paper or patent draft based on research findings.
 
 **支持格式 / Supported Formats**:
 - Markdown (纯文本格式 / plain text format)
@@ -258,11 +310,9 @@ This directory contains a suite of professional academic research assistant Skil
 3. **遵循模板** - 匹配目标期刊/会议格式 / Follow template - match target journal/conference format
 4. **迭代精炼** - 草稿、审查、修改 / Iterative refinement - draft, review, revise
 
----
+### 9. research-consistency-checker - 逻辑一致性检查 / Consistency Checker
 
-### 6. research-consistency-checker - 逻辑一致性检查 / Consistency Checker
-
-**功能 / Function**: 验证论文的逻辑一致性，确保所有主张都有证据支持。 / Verifies logical consistency of paper, ensuring all claims have evidence support.
+**功能 / Function**: 验证论文的逻辑一致性确保所有主张都有证据支持。/ Verifies logical consistency of paper, ensuring all claims have evidence support.
 
 **检查维度 / Check Dimensions**:
 - **Claim-Evidence 映射 / Mapping**: 每个主张是否有证据支持 / Each claim has evidence support
@@ -289,11 +339,9 @@ This directory contains a suite of professional academic research assistant Skil
 }
 ```
 
----
-
 ### 7. research-plagiarism-detector - 查重检测 / Plagiarism Detector
 
-**功能 / Function**: 检测论文与现有文献的相似度。 / Detects similarity between paper and existing literature.
+**功能 / Function**: 检测论文与现有文献的相似度。/ Detects similarity between paper and existing literature.
 
 **阈值标准 / Threshold Standards**:
 | 相似度 / Similarity | 严重程度 / Severity | 行动 / Action |
@@ -313,11 +361,9 @@ This directory contains a suite of professional academic research assistant Skil
 | Results | < 10% |
 | Conclusion | < 15% |
 
----
-
 ### 8. research-style-humanizer - 语言润色 / Style Humanizer
 
-**功能 / Function**: 移除AI写作痕迹，创造更自然的学术文风。 / Removes AI writing痕迹, creates more natural academic writing style.
+**功能 / Function**: 移除AI写作痕迹，创造更自然的学术文风。/ Removes AI writing痕迹, creates more natural academic writing style.
 
 **AI 模式检测 / AI Pattern Detection**:
 1. 过渡词过度使用 (`furthermore`, `moreover`, `additionally`) / Overuse of transition words
@@ -338,28 +384,7 @@ This directory contains a suite of professional academic research assistant Skil
 
 ---
 
-### 9. docx - Word 文档处理 / Word Document Processing
-
-**功能 / Function**: 创建、编辑、转换 Word 文档 (.docx)。 / Create, edit, convert Word documents (.docx).
-
-**核心能力 / Core Capabilities**:
-- 创建新文档 (使用 docx-js) / Create new documents (using docx-js)
-- 编辑现有文档 (解包 → 编辑XML → 打包) / Edit existing documents (unpack → edit XML → repack)
-- 格式处理 (页眉页脚、目录、表格、图像) / Format handling (headers/footers, tables of contents, tables, images)
-- 追踪修订与批注 / Track changes and comments
-- 中英双语文档支持 / Bilingual document support (Chinese/English)
-
-**使用场景 / Use Cases**:
-- 生成最终交付的 `.docx` 文件 / Generate final delivery `.docx` files
-- 编辑用户提供的模板文档 / Edit user-provided template documents
-- 转换内容为专业格式 / Convert content to professional format
-
----
-
 ## 其他辅助 Skills / Other Auxiliary Skills
-
-### arxiv
-学术论文预印本平台搜索工具。 / Academic preprint platform search tool.
 
 ### blogwatcher
 博客内容监控与检索工具。 / Blog content monitoring and retrieval tool.
@@ -407,3 +432,22 @@ LLM 相关知识库检索工具。 / LLM-related knowledge base retrieval tool.
 ---
 
 *本文档由 Sisyphus 自动生成 / This document was automatically generated by Sisyphus*
+
+---
+
+## 更新日志 / Changelog
+
+### 2025-05-05
+
+**更新的 skills**:
+- `arxiv/SKILL.md` - 新增学术论文预印本搜索工具
+- `docx/SKILL.md` - 新增 Word 文档处理工具
+- `paper-writing/SKILL.md` - 新增论文撰写工具
+
+**主要变更**:
+1. 重新组织核心 Skills 顺序，将最常用的 arxiv、docx、paper-writing 放在前面
+2. 更新搜索策略优先级：Crossref API (首选) → Semantic Scholar API → arXiv API
+3. 新增文献计量类论文特殊处理说明
+4. 新增语言水平调整功能说明
+5. 新增 API 检索坑点指南参考文档
+6. 更新 Deep Research 要求：至少 15 篇真实文献

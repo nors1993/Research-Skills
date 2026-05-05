@@ -3,8 +3,38 @@ name: paper-writing
 description: "Write research paper for any academic domain following specified templates."
 ---
 
+## 文献计量/科学计量类论文的特殊处理
+
+如果用户提交的作业/论文模板涉及 **"bibliometric analysis"、"文献计量"、"bibliometric"、"scientometric"、"主题演化"、"keyword co-occurrence"、"VOSviewer"、"Bibliometrix"** 等关键词，则该论文属于**文献计量类**（非常规议论文）。其撰写流程与常规论文有根本性差异——核心论据来自对真实文献数据的结构化分析，而非逻辑推演。
+
+此时，**不要盲目执行 Step 1-7 的标准流程**。先读取 `references/bibliometric-paper-workflow.md` 获取完整的调整后工作流。该工作流的关键调整：
+
+1. **Step 1 不再是可行性调研，而是真实数据收集**——使用 CrossRef API 作为首选检索工具（Semantic Scholar 大概率限速或返回空）
+2. **Step 2 是计量分析 + 可视化生成**——从 JSON 数据提取统计量，生成图表
+3. **源数据必须导出为 CSV/Excel**——检索式可验证，数据可复现
+4. **Discussion 必须紧扣数据**——不能在没有数据支撑的情况下断言趋势
+5. **明确承认数据局限**——如早期年份论文过少，在论文中说明而非掩盖
+
+核心注意事项：检索式必须精确可验证（课程作业中老师会重新运行），源数据必须提交，Discussion 需基于独立学术分析而非 AI 生成。
+
+---
+
+## 学术水平调整（Tone Level Adjustment）
+
+用户可能要求将已完成的论文从某个水平改写至另一个水平（如"改写成本科四年级学生的水平""改成硕士水平""现在显得太专家了"等）。此时：
+
+1. **不要从头重写**——保留数据、结构、参考文献和分析结果不变
+2. **仅调整语言层面**：
+   - **降级**（专家→本科）：缩短句子、替换学术黑话为平实表达、减少被动语态、增加说明性语言
+   - **升级**（本科→专家）：使用更精确的术语、复合句式、批判性措辞
+3. **同步更新关联文档**：可行性评估报告和文献综述也应同步调整语言水平
+4. **字数自然变化**：降级通常会使字数减少（~6000→~4000），这是预期行为，无需强行补足
+5. 不要改变检索式、数据表格、统计数字、图表和参考文献
+6. 详见 `references/undergraduate-level-adjustment.md` 获取完整的降级改动清单
+
 # 必须遵守
 1. 如果用户要求重新编写，或者重新研究，需要忘记历史内容，重新开始。
+2. 如果用户要求"改写"已有论文（非重写），保留数据和结构，仅调整语言层。
 2. 任务开始前，先让用户提供文件保存的目录位置，后续所有文件都保存在用户提供的目录中。
 3. 让用户指定撰写文章所用的语言：中文、英语、法语、日语等。
 
@@ -22,7 +52,10 @@ description: "Write research paper for any academic domain following specified t
 
 2. **Step 2: 深度调研与资料收集 (Deep Research)**
    - 确定研究方向后，进行全面检索。
-   - 动作：直接执行深度调研（子技能 research-deep-researcher 可能不可用，agent 自行完成）。至少15篇文献，附原文链接。文献必须真实存在，不能伪造，必须含**DOI**验证。**为了防止被API限制访问，搜索过程可以模仿人类搜索。** 注意——Semantic Scholar API 对多词查询可能返回空结果，优先使用 `urllib.parse.urlencode` 或在 Python 中直接用 `urllib.request`（避免 shell 二次处理 `&` 符号）。搜索引擎如 Google Scholar 可能对数据中心 IP 返回 CAPTCHA，备选方案包括 Semantic Scholar 扩展查询、arXiv 按类别检索、CrossRef DOI 验证。**每两次 API 请求间隔 ≥ 1.5 秒，避免 HTTP 429。** **如果搜索文献少于15篇，直接退出任务！并告知用户退出任务原因。**
+   - 动作：直接执行深度调研（子技能 research-deep-researcher 可能不可用，agent 自行完成）。至少15篇文献，附原文链接。文献必须真实存在，不能伪造，必须含**DOI**验证。
+   - **检索策略优先级**：① CrossRef API `/works?query=...`（首选——无限速，对多词英文查询容忍度高）；② Semantic Scholar API（备选——使用 `urllib.parse.urlencode` 编码，每两次请求间隔 ≥ 1.5s，被限速后换 Crossref）；③ arXiv API（备选——仅适用于 STEM 技术类论文）。搜索引擎如 Google Scholar 可能对数据中心 IP 返回 CAPTCHA，**不要作为首选**。
+   - 详见 `references/api-search-pitfalls.md` 以获取完整的 API 检索坑点和应对方案。
+   - **如果搜索文献少于15篇，直接退出任务！并告知用户退出任务原因。**
    - 产出：必须调用技能**docx**生成详细的文献综述，命名规则为《文献综述与资源列表.docx》。
    - 必须：用户确认可行后再继续下一步。
 
