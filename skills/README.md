@@ -457,9 +457,9 @@ LLM 相关知识库检索工具。 / LLM-related knowledge base retrieval tool.
 
 ---
 
-## 更新日志 / Changelog
+# 更新日志 / Changelog
 
-### 2025-05-05
+## 2025-05-05
 
 **更新的 skills**:
 - `arxiv/SKILL.md` - 新增学术论文预印本搜索工具
