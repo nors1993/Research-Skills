@@ -459,6 +459,16 @@ LLM 相关知识库检索工具。 / LLM-related knowledge base retrieval tool.
 
 # 更新日志 / Changelog
 
+## 2025-05-06
+
+**更新的 skills**:
+- `skills/paper-writing/SKILL.md` - 更新论文撰写工具
+
+**Diff 分析**:
+- 文件变更: `skills/paper-writing/SKILL.md` (文档更新)
+
+---
+
 ## 2025-05-05
 
 **更新的 skills**:

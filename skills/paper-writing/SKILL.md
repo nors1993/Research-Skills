@@ -38,6 +38,77 @@ description: "Write research paper for any academic domain following specified t
 2. 任务开始前，先让用户提供文件保存的目录位置，后续所有文件都保存在用户提供的目录中。
 3. 让用户指定撰写文章所用的语言：中文、英语、法语、日语等。
 
+---
+
+## 已有论文增强完善（Enhancing an Existing Paper）
+
+当用户要求在**已有论文基础上**扩充内容、增加参考文献、添加图表时（典型指令如"增加30篇参考文献""扩充至15页""增加5个图表"），不要走标准 Step 1-7 的全流程（那是为新论文设计的）。采用以下调整后流程：
+
+### 增强工作流
+
+1. **Step E1: 读取并诊断现有论文** — 使用 pandoc 或 python-docx 提取全文，分析：当前字数/页数、参考文献数量与质量、已有图表数量、各节篇幅分布。评估达到用户目标的缺口。
+
+2. **Step E2: 定向深度调研** — 检索目标方向的新增文献，优先使用 CrossRef API。**重要坑点**：CrossRef API 对中文关键词的检索结果质量极低，返回的多为不相关的低质量论文。此时**必须辅以手动策展**——从已知的中文核心期刊（通信学报、中国工程科学、管理世界、测绘学报、宇航学报、法学研究、中国科学院院刊、中国软科学等）中提名真实存在的近年论文。新增文献必须有真实 DOI 或来自可验证的期刊/机构报告。详见 `references/chinese-reference-curation.md`。
+
+3. **Step E3: 图表生成** — 使用 matplotlib 生成高质量 PNG 图表。注意：`execute_code` 沙箱通常不预装 matplotlib，需通过 terminal 执行 `pip install matplotlib numpy --break-system-packages`（耗时约 400s），或使用 `python3 -m venv` 后安装。Apt 安装需要 sudo 密码，不可用。
+
+4. **Step E4: 正文扩充与参考文献嵌入** — 将新增参考文献的引证嵌入正文相关位置，扩展既有章节，或在逻辑空白处新增子节。保持与原文相同的学术风格和引用格式。
+
+5. **Step E5: 生成最终 docx** — 对于含大量中文文本、多图表的长文档（>20,000 字），**优先使用 python-docx** 而非 docx-js。docx-js 在处理中文时的 f-string 转义复杂度随文档长度指数增长（`\\u201c`/`\\u201d` 与 JS 字符串定界符冲突、`{`被 Python f-string 误解析等）。python-docx 原生支持 Unicode，无转义问题。图表通过 `run.add_picture()` 嵌入，页边距和字体通过 `doc.styles` 统一设置。
+
+6. **Step E6: 验证与清理** — 检查 docx 可正常打开、图片数量正确、参考文献格式一致。删除过程中产生的临时代码文件（.py, .js, .ts 等）。
+
+---
+
+## 字数精控（Character Count Targeting）
+
+用户可能给出精确的字数约束（如"正文严格控制在 10,000 字以内""扩充至 15 页"等）。此时：
+
+### 核心规则
+
+1. **"字数"默认指中文字符（Chinese characters）**，不含参考文献。若用户未明确说明，以 `re.findall(r'[\u4e00-\u9fff]', body)` 统计的汉字数为准。
+2. **图表和参考文献不参与字数计算**，缩减时只改动正文 P() 调用。
+3. **计数时机**：生成 .docx 后，运行验证脚本确认正文汉字数落在目标区间内，若不达标则继续调整正文 P() 文本，直到达标。
+
+### 验证脚本模式
+
+```python
+import re
+from docx import Document
+
+doc = Document("paper.docx")
+in_refs = False
+body = ""
+for p in doc.paragraphs:
+    t = p.text.strip()
+    if t.startswith("[1]"):  # 参考文献开始标志
+        in_refs = True
+    if not in_refs:
+        body += t
+
+cn = len(re.findall(r"[\u4e00-\u9fff]", body))
+print(f"Chinese chars (body only): {cn}")
+```
+
+### 常见字数-页数对应（中文论文，A4，1.5倍行距，12pt 宋体）
+
+| 中文字符 | 约合页数（含图表） |
+|---------|-----------------|
+| 3,000 | 4-5 |
+| 5,000 | 7-8 |
+| 8,000 | 12-14 |
+| 10,000 | 15-17 |
+| 15,000 | 22-25 |
+| 30,000 | 40+ |
+
+### 应对"太长了"反馈
+
+当用户反馈论文太长时，严格遵循以下优先级缩减：
+1. ✅ 保留所有 FIG()、TBL()、参考文献调用 — 一字不动
+2. ✅ 压缩 P() 正文段落 — 删冗余修饰词、合并相邻段落、精简数据描述
+3. ✅ 保留论点、数据、引用编号 [N] — 这些是学术价值的核心载体
+4. ❌ 不要删图表或参考文献来凑字数 — 用户明确要求"图表均保留"
+
 # 禁止
 下述step 1 ~ step 7，任何一个step未完成，不允许进入下一个step 。
 
@@ -54,6 +125,7 @@ description: "Write research paper for any academic domain following specified t
    - 确定研究方向后，进行全面检索。
    - 动作：直接执行深度调研（子技能 research-deep-researcher 可能不可用，agent 自行完成）。至少15篇文献，附原文链接。文献必须真实存在，不能伪造，必须含**DOI**验证。
    - **检索策略优先级**：① CrossRef API `/works?query=...`（首选——无限速，对多词英文查询容忍度高）；② Semantic Scholar API（备选——使用 `urllib.parse.urlencode` 编码，每两次请求间隔 ≥ 1.5s，被限速后换 Crossref）；③ arXiv API（备选——仅适用于 STEM 技术类论文）。搜索引擎如 Google Scholar 可能对数据中心 IP 返回 CAPTCHA，**不要作为首选**。
+   - ⚠️ **中文文献检索限制**：CrossRef API 对中文关键词的检索质量极低，返回多为不相关论文。如需补充中文文献，**必须辅以手动策展**——从已知中文核心期刊提名真实文献。详见 `references/chinese-reference-curation.md`。
    - 详见 `references/api-search-pitfalls.md` 以获取完整的 API 检索坑点和应对方案。
    - **如果搜索文献少于15篇，直接退出任务！并告知用户退出任务原因。**
    - 产出：必须调用技能**docx**生成详细的文献综述，命名规则为《文献综述与资源列表.docx》。
