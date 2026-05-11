@@ -3,7 +3,26 @@ name: paper-writing
 description: "Write research paper for any academic domain following specified templates."
 ---
 
-## 文献计量/科学计量类论文的特殊处理
+## 图表质量与排序（Figure Quality & Ordering）
+
+图表是论文的核心论据载体，用户对图表质量和逻辑排序有高度敏感的要求。**这是高频退稿点。**
+
+### 核心规则
+
+1. **图表必须逻辑排序**：图1→图2→图3→图4→图5 必须形成递进逻辑链，不能按生成顺序随意排列。建议排序：全景数据→分布对比→分类比较→过程型数据→机制/框架图。
+2. **图5（框架/机制图）需要最高质量**：架构图不能只是简单箭头和方框，必须有区分度（颜色、形状、图例）、有对比（如"2020 vs 2026+"）、有生态节点和连接线。参考模式见 `references/figure5-blueprint.md`。⚠️ **图表内所有文字必须为英文**——用户明确要求图表不含中文，matplotlib 的 DejaVu Sans 无 CJK 字形。
+3. **所有图表数据必须与正文同步更新**：若正文数据从2023年更新到2025年，图表必须同步再生，不能使用旧图。
+4. **图表标题格式**：`Figure X. [英文描述]\nData: [数据来源]`，居中、小字号、斜体。
+
+### 常见图表排序（空天信息产业类论文）
+
+```
+图1: 产业收入全景（历史+预测）
+图2: 在轨卫星国别分布（结构对比）
+图3: 主要星座计划vs实际部署（数量对比）
+图4: 年度发射活动（过程变化）
+图5: 产业链/价值链重构（机制框架）
+```
 
 如果用户提交的作业/论文模板涉及 **"bibliometric analysis"、"文献计量"、"bibliometric"、"scientometric"、"主题演化"、"keyword co-occurrence"、"VOSviewer"、"Bibliometrix"** 等关键词，则该论文属于**文献计量类**（非常规议论文）。其撰写流程与常规论文有根本性差异——核心论据来自对真实文献数据的结构化分析，而非逻辑推演。
 
@@ -40,7 +59,36 @@ description: "Write research paper for any academic domain following specified t
 
 ---
 
-## 已有论文增强完善（Enhancing an Existing Paper）
+## 数据时效性与时间视角（Data Currency & Time Perspective）
+
+用户对论文数据时效性有严格要求，特别是在涉及"现状"与"趋势"分析的论文中。**这是高频纠错点，必须高度重视。**
+
+### 核心规则
+
+1. **现状（Current Status）必须使用已发生数据**：所有标记为"现状""发展现状""截至当前"的论述，数据必须是用户指定的当前时间点之前已经公布的真实数据。不可将预测数据伪装成现状。
+
+2. **趋势（Trends/Forecast）必须基于未来判断**：所有标记为"趋势""预测""前景"的论述，必须以用户指定的当前时间为起点，仅描述尚未发生的事件。
+
+3. **时间锚定**：论文生成前，**必须先确认用户指定的"当前时间点"**（如"现在是2026年5月"），然后据此检索该时间点之前的最新权威数据。
+
+4. **数据引用必须标注数据截止日期**：所有行情数据需明确标注"截至XXXX年XX月"或"数据来源：XXX报告（XXXX年版）"。
+
+### 典型错误案例
+
+| 错误 | 正确 |
+|------|------|
+| "Starlink在轨超6,000颗"（2023年数据，但当前是2026年） | "截至2025年12月，Starlink在轨超7,200颗" |
+| "2023年全球在轨活跃卫星突破9,000颗"（时效已过） | "截至2025年12月，全球在轨活跃卫星超11,000颗" |
+| 趋势预测中引用"2019年发射次数将增长" | 趋势仅用未来年份数据 |
+
+### 数据源优先级（获取最新数据时）
+
+1. **SIA年度报告**（每年6月发布前一年数据）——卫星产业收入最权威来源
+2. **FAA年度空间运输纲要**——发射统计数据
+3. **Jonathan McDowell's Space Report** (planet4589.org)——Starlink和全球在轨卫星最及时数据
+4. **UCS卫星数据库**——在轨卫星国别/功能分类
+5. **CelesTrak SATCAT**——NORAD编目数据
+6. **注意**：web scraping 这些站点常超时，可用 `curl` 配合 `--max-time 15` 快速探测；若全部超时，使用已知的最新公开发布数据并明确标注数据截止日期
 
 当用户要求在**已有论文基础上**扩充内容、增加参考文献、添加图表时（典型指令如"增加30篇参考文献""扩充至15页""增加5个图表"），不要走标准 Step 1-7 的全流程（那是为新论文设计的）。采用以下调整后流程：
 
@@ -60,7 +108,19 @@ description: "Write research paper for any academic domain following specified t
 
 ---
 
-## 字数精控（Character Count Targeting）
+## 子代理超时警告（Subagent Timeout Warning）
+
+**不要在最终 .docx 生成阶段使用 `delegate_task`。** 本会话中，三次将论文生成任务委托给子代理（一次中文、一次英文、一次APA版），全部在 600s 后超时——每次消耗约 10 分钟但无一成功。
+
+### 原因分析
+
+- `delegate_task` 对需要多次 `write_file`→`terminal`→`verify` 循环的长文档生成任务不可靠
+- 子代理在生成大型 Python 脚本时容易出现写入/执行/调试的死循环
+- 600s 超时对于复杂的 .docx 生成（5图+2表+50+参考文献）不够
+
+### 正确做法
+
+直接在主会话中编写 `write_file` 生成完整 Python 脚本，然后用 `terminal` 一次性执行。即使脚本需要多次 `patch` 修正（如变量名冲突、字符计数调整），也比等子代理超时后手动重做快得多。
 
 用户可能给出精确的字数约束（如"正文严格控制在 10,000 字以内""扩充至 15 页"等）。此时：
 
@@ -118,32 +178,34 @@ print(f"Chinese chars (body only): {cn}")
 1. **Step 1: 意图理解与可行性调研 (Feasibility Study)**
    - 接收用户的初步想法，将用户的输入内容进行UTF-8格式的转换，防止输入意图有乱码。
    - 思考：该方向是否已被广泛研究？有无极度相似的现成论文或专利？
-   - 动作：直接执行可行性调研（子技能 research-idea-parser / research-feasibility-researcher 可能不可用，agent 自行完成即可）。使用 arXiv API、Semantic Scholar API、浏览器检索真实文献。调用技能**docx**向用户出具可行性评估报告《XXX可行性评估报告.docx》（包含已识别文献列表、相似工作、创新点挖掘建议）。若想法不可行，需引导用户调整方向。
+   - 动作：直接执行可行性调研。参考 `references/idea-parser.md` 中的结构化解析策略和 `references/feasibility-researcher.md` 中的领域特定检索策略。使用 arXiv API、Semantic Scholar API、浏览器检索真实文献。调用技能**docx**向用户出具可行性评估报告《XXX可行性评估报告.docx》（包含已识别文献列表、相似工作、创新点挖掘建议）。若想法不可行，需引导用户调整方向。
    - 必须：用户确认可行后再继续下一步。
 
 2. **Step 2: 深度调研与资料收集 (Deep Research)**
    - 确定研究方向后，进行全面检索。
-   - 动作：直接执行深度调研（子技能 research-deep-researcher 可能不可用，agent 自行完成）。至少15篇文献，附原文链接。文献必须真实存在，不能伪造，必须含**DOI**验证。
+   - 动作：直接执行深度调研。参考 `references/deep-researcher.md` 中的迭代广度→深度搜索策略、API 优先级和源可靠性说明。至少15篇文献，附原文链接。文献必须真实存在，不能伪造，必须含**DOI**验证。
    - **检索策略优先级**：① CrossRef API `/works?query=...`（首选——无限速，对多词英文查询容忍度高）；② Semantic Scholar API（备选——使用 `urllib.parse.urlencode` 编码，每两次请求间隔 ≥ 1.5s，被限速后换 Crossref）；③ arXiv API（备选——仅适用于 STEM 技术类论文）。搜索引擎如 Google Scholar 可能对数据中心 IP 返回 CAPTCHA，**不要作为首选**。
-   - ⚠️ **中文文献检索限制**：CrossRef API 对中文关键词的检索质量极低，返回多为不相关论文。如需补充中文文献，**必须辅以手动策展**——从已知中文核心期刊提名真实文献。详见 `references/chinese-reference-curation.md`。
-   - 详见 `references/api-search-pitfalls.md` 以获取完整的 API 检索坑点和应对方案。
+  - ⚠️ **中文文献检索限制**：CrossRef API 对中文关键词的检索质量极低，返回多为不相关论文。如需补充中文文献，**必须辅以手动策展**——从已知中文核心期刊提名真实文献。详见 `references/chinese-reference-curation.md`。
+  - 详见 `references/api-search-pitfalls.md` 以获取完整的 API 检索坑点和应对方案。
+   - 图表设计尤其是图5（框架机制图）的退稿模式与修复方案见 `references/figure5-blueprint.md`。
+   - **中文 .docx 文本替换陷阱**：python-docx 的 `paragraph.text` 拼接能读但不可写，且中文文本常被拆分为数十个 `<w:r>` 片段。修改含中文的 .docx 时，优先使用 **Unpack → XML 直接编辑 → Repack** 方案。详见 `references/docx-xml-editing.md`。
    - **如果搜索文献少于15篇，直接退出任务！并告知用户退出任务原因。**
    - 产出：必须调用技能**docx**生成详细的文献综述，命名规则为《文献综述与资源列表.docx》。
    - 必须：用户确认可行后再继续下一步。
 
 3. **Step 3: 核心观点与大纲起草 (Drafting)**
    - 基于调研结果，构建论文的核心论点与创新架构。
-   - 动作：基于调研结果构建论文的核心论点与创新架构。默认参考目录 **skills\\paper-writing\\references** 内文档的格式，直接起草文档（子技能 research-paper-drafting 可能不可用）。如果用户提供了文件模板要求，则根据用户提供的模板进行撰写。**文档章节和格式必须与模板文件一样！**
+   - 动作：基于调研结果构建论文的核心论点与创新架构。默认参考目录 **references/** 内文档的格式，直接起草文档（参见 `references/paper-drafting.md` 中的分节撰写策略、模板集成和字数管理）。如果用户提供了文件模板要求，则根据用户提供的模板进行撰写。**文档章节和格式必须与模板文件一样！**
    - 产出：《XXX.docx》。
 
 4. **Step 4: 逻辑自洽与推演校验 (Logic Validation)**
-   - 动作：自行扮演"苛刻的审稿人（Reviewer）"角色（子技能 research-consistency-checker 可能不可用），对生成的论文进行交叉验证：检查论点之间是否存在逻辑矛盾、数据是否前后一致、论证链是否完整。
+   - 动作：自行扮演"苛刻的审稿人（Reviewer）"角色，对生成的论文进行交叉验证。详细策略见 `references/consistency-checker.md`（多视角审稿模式、问题分类、claim-evidence 映射）。检查论点之间是否存在逻辑矛盾、数据是否前后一致、论证链是否完整。
 
 5. **Step 5: 查重与重复率控制 (Plagiarism Check)**
-   - 动作：自行对文中关键段落进行查重检测（子技能 research-plagiarism-detector 可能不可用），对比互联网与已公开论文，确保原创性。
+   - 动作：自行对文中关键段落进行查重检测。详细方法见 `references/plagiarism-detector.md`（段落级相似度计算、分节阈值、重写建议生成）。对比互联网与已公开论文，确保原创性。
 
 6. **Step 6: 语言润色与去AI化 (Polishing & Humanizing)**
-   - 动作：自行对全文进行最终语言审查（子技能 research-style-humanizer 可能不可用），消除"AI生成"痕迹，使用精炼、客观、严谨的学术语言，拒绝典型 AI 词汇（"总而言之""深入探讨""不难发现""画卷"等）。
+   - 动作：自行对全文进行最终语言审查。详细方法见 `references/style-humanizer.md`（AI 模式检测、多轮降痕 Pipeline、中英文 AI 标志词汇清单）。消除"AI生成"痕迹，使用精炼、客观、严谨的学术语言，拒绝典型 AI 词汇（"总而言之""深入探讨""不难发现""画卷"等）。
 
 7. **Step 7: 生成最终的文档 (Publishing)**
    - 动作：确保《XXX可行性评估报告.docx》、《文献综述与资源列表.docx》和最终版论文《XXX.docx》三个文件均已生成，显性通知用户任务已完成，并给出最终文档保存的位置。如果在文档保存的目录中生成了过程中的代码文件，比如.py、.mjs、.js、.ts等格式文件，需要将其删除。
