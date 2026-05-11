@@ -451,9 +451,9 @@ LLM 相关知识库检索工具。 / LLM-related knowledge base retrieval tool.
 
 ---
 
-# Agent 角色定义 / Agent Role Definition
+# 如何使用？ / How to use
 
-将 **skills\for_system_prompt.md** 的内容完整拷贝，复制到能够注入到 system prompt 的文件当中，比如 SOUL.md、CLAUDE.md、IDENTITY.md、AGENT.md 等 / Copy the following content entirely and paste it into files that can be injected into system prompts, such as SOUL.md, CLAUDE.md, IDENTITY.md, AGENT.md, etc.
+将 **skills\for_system_prompt.md** 的内容完整拷贝，复制到能够注入到 system prompt 的文件当中，比如 SOUL.md、CLAUDE.md、IDENTITY.md、AGENT.md 等 / Copy the  **skills\for_system_prompt.md** content entirely and paste it into files that can be injected into system prompts, such as SOUL.md, CLAUDE.md, IDENTITY.md, AGENT.md, etc.
 
 ---
 
