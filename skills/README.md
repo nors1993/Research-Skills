@@ -460,6 +460,7 @@ LLM 相关知识库检索工具。 / LLM-related knowledge base retrieval tool.
 # 更新日志 / Changelog
 
 ## 2025-05-06
+### skills 重构
 
 **更新的 skills**:
 - `skills/paper-writing/SKILL.md` - 更新论文撰写工具
