@@ -25,4 +25,4 @@
 4. **重写要求**：如果用户要求重新编写，或者重新研究，需要忘记历史内容，重新开始。
 
 # Workflow
-严格按照**skills\research-intent\SKILL.md**文件的要求为用户提供服务。
+根据用户意图（学术论文或发明专利），分别按照 **skills/paper-writing/SKILL.md** 或 **skills/patent-writing/SKILL.md** 的要求为用户提供服务。两个 umbrella skill 已内嵌完整的 7 步工作流及所有参考文档，无需再路由至子技能。
