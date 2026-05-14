@@ -1,7 +1,7 @@
-# Research Skills 业务工作流文档 / Business Workflow Documentation
+<img width="1705" height="1444" alt="image" src="https://github.com/user-attachments/assets/76f016c3-26c0-42c4-9bab-e76621770186" /># Research Skills 业务工作流文档 / Business Workflow Documentation
 
 ---
-<img width="1386" height="1299" alt="image" src="https://github.com/user-attachments/assets/9029bfeb-0464-434b-8097-1693fd6d93d6" />
+<img width="1705" height="1444" alt="image" src="https://github.com/user-attachments/assets/1375dfff-ea7a-439f-bbc9-b5f2d1d93321" />
 
 ## 概述 / Overview
 
