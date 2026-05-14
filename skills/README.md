@@ -1,6 +1,7 @@
 # Research Skills 业务工作流文档 / Business Workflow Documentation
 
 ---
+<img width="1386" height="1299" alt="image" src="https://github.com/user-attachments/assets/9029bfeb-0464-434b-8097-1693fd6d93d6" />
 
 ## 概述 / Overview
 
