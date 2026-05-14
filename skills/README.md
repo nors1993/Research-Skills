@@ -1,9 +1,6 @@
-<img width="1705" height="1444" alt="image" src="https://github.com/user-attachments/assets/76f016c3-26c0-42c4-9bab-e76621770186" /># Research Skills 业务工作流文档 / Business Workflow Documentation
-
----
-<img width="1705" height="1444" alt="image" src="https://github.com/user-attachments/assets/1375dfff-ea7a-439f-bbc9-b5f2d1d93321" />
-
 ## 概述 / Overview
+
+<img width="1705" height="1444" alt="image" src="https://github.com/user-attachments/assets/f45d7eec-366b-46ab-b926-f05d8c8863e1" />
 
 本目录包含一系列专业的学术研究辅助 Skills，用于支持从研究想法到最终文档产出的完整业务流程。这些 Skills 覆盖了 **论文写作** 和 **专利撰写** 两大应用场景。
 
